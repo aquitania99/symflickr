@@ -29,7 +29,7 @@
                     <li class="active"><a href="/">Reffind Flickr Gallery <span class="glyphicon glyphicon-equalizer"></span></a></li>
                 </ul>
                 <div id="navbar" class="navbar-collapse collapse">
-                    <form class="navbar-form navbar-right" method="post" action="{{ path('flickr_api') }}">
+                    <form class="navbar-form navbar-right" method="post" action="{{ path('flickr_api_search') }}">
                         <div class="form-group">
                             <input type="text" placeholder="Search by term" id="keyword" name="keyword" class="form-control">
                         </div>
@@ -41,7 +41,24 @@
     </div>
 </nav>
 <div class="container">
+    <div class="row">
+        {% if flickr['photos'] is defined %}
+            {% dump(flickr['photos']['pages']) %}
+            {% dump(flickr['photos']['total']) %}
 
+            {% for photo in flickr['photos']['photo'] %}
+                {% dump(photo["farm"]) %}
+                {# the image URL becomes somthing like #}
+                {# http://farm{farm-id}.static.flickr.com/{server-id}/{id}_{secret}.jpg #} 
+                <div class="col-sm-3 mb20">
+                    <img class="img-responsive img-center" src="http://farm{{ photo["farm"] }}.static.flickr.com/{{ photo["server"] }}/{{ photo["id"] }}_{{ photo["secret"]}}.jpg" alt="{{ photo['title']}}">
+                </div>
+            {% endfor %}
+        {% else %}
+            {# users is probably a string #}
+            Hello there!
+        {% endif %}
+    </div>
 </div>
 
 <!-- Bootstrap core JavaScript
