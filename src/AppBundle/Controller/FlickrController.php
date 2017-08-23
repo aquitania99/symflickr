@@ -18,41 +18,21 @@ class FlickrController extends Controller
 
     public function indexAction()
     {
-        $this->apiKey = $this->container->getParameter('flickr_key');
-        $this->apiSecret = $this->container->getParameter('flickr_secret');
-        $this->apiUrl = $this->container->getParameter('flickr_url');
-
-//        $this->keyword = urlencode($request->request->get('keyword'));
-        $this->method = 'flickr.photos.getRecent';
-        $extras = urlencode('tags, description');
-        $resultsPerPage = 10;
-        $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&per_page=".$resultsPerPage."&extras=".$extras."format=json";
-        $response = $this->curlCall($url);
-        $photos = $response['photos']['photo'];
-        dump($url);
-        return $this->render('@App/layout.html.twig', array('flickr' => $response));
+        $method = 'flickr.photos.getRecent';
+        $getImages = $this->flickrAction($method);
+        return $this->render('@App/layout.html.twig', array('flickr' => $getImages['flickrResponse']));
     }
 
-    public function searchAction(Request $request)
+    public function searchAction(Request $request, $page = null)
     {
-        if($request->isMethod('POST'))
-        {
-            $this->apiKey = $this->container->getParameter('flickr_key');
-            $this->apiSecret = $this->container->getParameter('flickr_secret');
-            $this->apiUrl = $this->container->getParameter('flickr_url');
-            $extras = urlencode('tags, description');
-            $resultsPerPage = 10;
+            $keyword = urlencode($request->request->get('keyword'));
+            $flickrPage = !$page ? "": $page;
+            $method = 'flickr.photos.search';
+   
+            $response = $this->flickrAction($method, $flickrPage, $keyword);
 
-            $this->keyword = urlencode($request->request->get('keyword'));
-            $this->method = 'flickr.photos.search';
-            $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&text=".$this->keyword."&extras=".$extras."&per_page=".$resultsPerPage."&format=php_serial";
-            $response = $this->curlCall($url);
-            dump($response);
-            return $this->render('@App/layout.html.twig', array('flickr' => $response));
-        }
-        else {
-            return $this->render('@App/layout.html.twig', array('flickr' => 'BLAH!'));
-        }
+            return $this->render('@App/layout.html.twig', array('flickr' => $response['flickrResponse'], "keyword" => $keyword));
+  
     }
 
     protected function curlCall($url) {
@@ -65,7 +45,6 @@ class FlickrController extends Controller
         curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36');
         $output = curl_exec($curl);
         $retcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        dump($output);
         curl_close($curl);
         if ($retcode == 200) {
             $json = substr( $output, strlen( "jsonFlickrApi(" ), strlen( $output ) - strlen( "jsonFlickrApi(" ) - 1 );
@@ -75,5 +54,26 @@ class FlickrController extends Controller
             return null;
         }
     }
-
+    
+    protected function flickrAction($method, $page=null, $keyword=null)
+    {
+        $this->apiKey = $this->container->getParameter('flickr_key');
+        $this->apiSecret = $this->container->getParameter('flickr_secret');
+        $this->apiUrl = $this->container->getParameter('flickr_url');
+        $extras = urlencode('tags, description');
+        $resultsPerPage = 10;
+        $this->keyword = urlencode($keyword);
+        $this->method = $method;
+        
+        if ($method == 'flickr.photos.search'){
+            $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&text=".$this->keyword."&page=".$page."&extras=".$extras."&per_page=".$resultsPerPage."&format=json";
+            $response = $this->curlCall($url);
+            
+        } elseif ($method == 'flickr.photos.getRecent'){
+            $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&extras=".$extras."&page=".$page."&per_page=".$resultsPerPage."&format=json";
+            $response = $this->curlCall($url);
+        }
+        
+        return array("flickrResponse"=>$response);
+    }
 }
