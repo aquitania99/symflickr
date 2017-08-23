@@ -1,0 +1,9 @@
+flickr_api:
+    path:       /flickr
+    defaults:   { _controller: AppBundle:Flickr:index }
+    methods:    [GET, POST]
+
+#flickr_api_detail:
+#    path:       /flickr/search
+#    defaults:   { _controller: AppBundle:Flickr:search }
+#    methods:    [GET,POST]

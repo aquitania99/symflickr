@@ -1,0 +1,47 @@
+version: '3'
+services:
+  nginx:
+      restart: always
+      image: 'bitnami/nginx:1.12.0-r0'
+      ports:
+          - '80:80'
+          - '443:443'
+      working_dir: /var/flickrtest
+      volumes:
+          - .:/var/flickrtest
+          - ./nginx/bitnami:/bitnami/nginx
+
+  phpfpm:
+      restart: always
+      build:
+          context: ./phpfpm
+      expose:
+          - "9000"
+      environment:
+          - MYSQL_DB_HOST=db
+          - MYSQL_DB_USER=root
+          - SYMFONY_DB=sample_db
+          - SYMFONY_ENV=dev
+      volumes:
+          - .:/var/flickrtest
+          - ./phpfpm/conf:/bitnami/php-fpm
+      working_dir: /var/flickrtest
+
+  db:
+      restart: always
+      image: mysql
+      ports:
+          - '3306:3306'
+      environment:
+          - MYSQL_ROOT_PASSWORD=Pass@word01
+          - MYSQL_DATABASE=sample_db
+      volumes:
+          - ./database:/var/lib/mysql
+
+volumes:
+  db:
+    driver: local
+  phpfpm:
+    driver: local
+  nginx:
+    driver: local
