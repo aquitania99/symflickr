@@ -1,22 +1,26 @@
 {% extends '::base.html.twig' %}
+{% block title %}Flickr - Search by keyword{% endblock %}
 
 {% block body %}
     <div class="row">
         {% if flickr['photos'] is defined %}
             {% set page = flickr['photos']['page'] %}
             {% set page_end = flickr['photos']['pages'] %}
-            <div>
-                Page: <span class="badge">{{flickr['photos']['page']}} out of <span class="badge">{{flickr['photos']['pages']}}</span>
-            </div>
             <div>Total Photos: <span class="badge">{{flickr['photos']['total']}}</span></div>
+            <div class="clearfix" style="padding:.8em;"></div>
+            <div>
+                Page: <span class="badge">{{ page }}</span> out of <span class="badge">{{ page_end }}</span>
+            </div>
+            
+            <div class="clearfix" style="padding:1em;"></div>
             <div>
                 {% if keyword is defined %}
                     <div class="alert alert-info" role="alert"> Showing results for: <strong>{{ keyword }}</strong></div> 
                 {% endif %}
             </div>
-            <div class="clearfix" style="padding:2em;"></div>
+            <div class="clearfix" style="padding:1em;"></div>
             {% for photo in flickr['photos']['photo'] %}
-                <div class="col-md-4" style="padding: 1em;">
+                <div class="col-md-4" style="padding: .5em;">
                     <a href="{{ path('flickr_api_get_photo', {'photo_id': photo["id"] }) }}?photo_secret={{ photo["secret"] }}">
                         <img class="img-thumbnail img-center" src="http://farm{{ photo["farm"] }}.static.flickr.com/{{ photo["server"] }}/{{ photo["id"] }}_{{ photo["secret"]}}_m.jpg/sizes/m/" media="photo" alt="{{ photo['title']}}">
                     </a>

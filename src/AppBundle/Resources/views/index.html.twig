@@ -1,15 +1,16 @@
 {% extends '::base.html.twig' %}
-
+{% block title %}Flickr - Recently added{% endblock %}
 {% block body %}
     <div class="row">
         {% if flickr['photos'] is defined %}
-            <h4>TOP 10 Recent Additions</h4>
-            <div>Total Photos: <span class="badge">{{flickr['photos']['total']}}</span></div>
+            <h4>Random selection of Flickr recent additions</h4>
+             <div class="clearfix" style="padding:1em;"></div>
+             <div><strong>Total Photos returned:</strong> <span class="badge">{{flickr['photos']['total']}}</span></div>
             <div>
                 {% for photo in flickr['photos']['photo'] %}
                     <div class="col-md-4" style="padding: 1em;">
                         <a href="https://www.flickr.com/photos/{{photo["owner"]}}/{{photo["id"]}}" target="_blank">
-                            <img class="img-responsive img-center" src="http://farm{{ photo["farm"] }}.static.flickr.com/{{ photo["server"] }}/{{ photo["id"] }}_{{ photo["secret"]}}_m.jpg/sizes/m/" media="photo" alt="{{ photo['title']}}">
+                            <img class="img-thumbnail img-center" src="http://farm{{ photo["farm"] }}.static.flickr.com/{{ photo["server"] }}/{{ photo["id"] }}_{{ photo["secret"]}}_m.jpg/sizes/m/" media="photo" alt="{{ photo['title']}}">
                         </a>
                     </div>
                 {% endfor %}
