@@ -1,0 +1,31 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    
+    {% dump(flickr['photo'])%}
+    <a href="{{flickr['photo']['urls']['url'][0]['_content']}}" target="_blank">
+        Photo
+    </a>
+    {#<div>
+        <table>
+            {% for key, item in flickr['photo'] %}
+                <tr style="padding: 1em;">
+                    <td>{{key}}</td>
+                    {% if item is iterable %}
+                        {% for value in item %}
+                            {% if value is iterable %}
+                                {% for part in value %}
+                                    **** // ****
+                                {% endfor %}
+                            {% else %}
+                                <td>{{value}}</td>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <td>{{item}}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </table>
+    </div>#}
+{% endblock %}

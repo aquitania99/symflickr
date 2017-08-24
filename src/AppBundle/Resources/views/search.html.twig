@@ -1,0 +1,37 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <div class="row">
+        {% if flickr['photos'] is defined %}
+            <div>
+                Page: <span class="badge">{{flickr['photos']['page']}} out of <span class="badge">{{flickr['photos']['pages']}}</span>
+            </div>
+            <div>Total Photos: <span class="badge">{{flickr['photos']['total']}}</span></div>
+            <div>
+                {% if keyword is defined %}
+                    <div class="alert alert-info" role="alert"> Showing results for: <strong>{{ keyword }}</strong></div> 
+                {% endif %}
+            </div>
+            {% for photo in flickr['photos']['photo'] %}
+                <div class="col-md-4" style="padding: 1em;">
+                    <a href="{{ path('flickr_api_get_photo', {'photo_id': photo["id"] }) }}?photo_secret={{ photo["secret"] }}">
+                        <img class="img-responsive img-center" src="http://farm{{ photo["farm"] }}.static.flickr.com/{{ photo["server"] }}/{{ photo["id"] }}_{{ photo["secret"]}}_m.jpg/sizes/m/" media="photo" alt="{{ photo['title']}}">
+                    </a>
+                </div>
+            {% endfor %}
+            <div class="row">
+                <div class="bs-example" data-example-id="simple-pager">
+                    <nav aria-label="...">
+                        <ul class="pager"> <li>
+                            <a href="#">Previous</a></li>
+                            <li><a href="{{ path('flickr_api_search') }}">Next</a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        {% else %}
+            {# users is probably a string #}
+            Hello there!
+        {% endif %}
+    </div>
+{% endblock %}

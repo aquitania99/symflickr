@@ -1,13 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
-        {% block stylesheets %}{% endblock %}
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        {% block stylesheets %}
+            <!-- Latest compiled and minified CSS -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+            <!-- Optional theme -->
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+            <link href="css/carousel.css" rel="stylesheet">
+            <link href="css/global.css" rel="stylesheet">
+            <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        <nav class="navbar navbar-inverse navbar-static-top">
+            <div class="container">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Reffind Flickr Gallery</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <!--<a class="navbar-brand active">Wop-Hits <span class="glyphicon glyphicon-equalizer"></span></a>-->
+                    </div>
+                    <div id="navbar" class="navbar-collapse collapse">
+                        <ul class="nav navbar-nav">
+                            <!--<li class="active"><a href="/">Home <span class="glyphicon glyphicon-home"></span></a></li>-->
+                            <li class="active"><a href="/">Reffind Flickr Gallery <span class="glyphicon glyphicon-equalizer"></span></a></li>
+                        </ul>
+                        <div id="navbar" class="navbar-collapse collapse">
+                            <form class="navbar-form navbar-right" method="post" action="{{ path('flickr_api_search') }}">
+                                <div class="form-group">
+                                    <input type="text" placeholder="Search by term" id="keyword" name="keyword" class="form-control">
+                                </div>
+                                <button type="submit" class="btn btn-success">Search <span class="glyphicon glyphicon-search"></span></button>
+                            </form>
+                        </div><!--/.navbar-collapse -->
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            {% block body %}{% endblock %}
+        </div>
+        {% block javascripts %}
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        {% endblock %}
     </body>
 </html>

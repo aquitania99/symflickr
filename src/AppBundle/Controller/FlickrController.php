@@ -20,7 +20,7 @@ class FlickrController extends Controller
     {
         $method = 'flickr.photos.getRecent';
         $getImages = $this->flickrAction($method);
-        return $this->render('@App/layout.html.twig', array('flickr' => $getImages['flickrResponse']));
+        return $this->render('@App/index.html.twig', array('flickr' => $getImages['flickrResponse']));
     }
 
     public function searchAction(Request $request, $page = null)
@@ -31,7 +31,7 @@ class FlickrController extends Controller
 
             $response = $this->flickrAction($method, $flickrPage, $keyword);
 
-            return $this->render('@App/layout.html.twig', array('flickr' => $response['flickrResponse'], "keyword" => $keyword));
+            return $this->render('@App/search.html.twig', array('flickr' => $response['flickrResponse'], "keyword" => $keyword));
 
     }
 
@@ -42,8 +42,17 @@ class FlickrController extends Controller
             $method = 'flickr.photos.getInfo';
             $option = ["photo_id" => $photo_id, "photo_secret" => $photo_secret];
             $response = $this->flickrAction($method, "", $option);
+            $keyword = $response['flickrResponse']['photo']['title']['_content'];
+            $result = $this->getDetails($response);
+            dump($result);
+            
+            return $this->render('@App/detail.html.twig', array('flickr' => $response['flickrResponse'], "keyword" => $keyword));
 
-            return $this->render('@App/layout.html.twig', array('flickr' => $response['flickrResponse'], "keyword" => $keyword));
+    }
+
+    public function paginateAction(Request $request, $page)
+    {
+      // @TODO: Add the logic to paginate results when searching by Keyword
 
     }
 
@@ -77,7 +86,7 @@ class FlickrController extends Controller
           $this->option = urlencode($option);
         }
         else $this->option = $option;
-        dump($this->option);
+//        dump($this->option);
 
         $this->method = $method;
 
@@ -111,7 +120,19 @@ class FlickrController extends Controller
             # code...
             break;
         }
-
+        
         return array("flickrResponse"=>$response);
+    }
+    
+    protected function getDetails($photo_data) {
+        foreach ($photo_data as $key => $value) {
+            echo "<span style='padding:1em;'>" . $key . "<span>";
+            if(is_array($value)){
+                foreach ($value as $item => $val) {
+                    echo "<span style='padding:1em;'>" . $item . "<span>";
+                    echo "<span style='padding:1em;'>" . $item . "<span>";
+                }
+            }
+        }
     }
 }
