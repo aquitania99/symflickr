@@ -23,9 +23,15 @@ class FlickrController extends Controller
         return $this->render('@App/index.html.twig', array('flickr' => $getImages['flickrResponse']));
     }
 
-    public function searchAction(Request $request, $page = null)
+    public function searchAction(Request $request, $page=null)
     {
-            $keyword = urlencode($request->request->get('keyword'));
+            if ($request->isMethod('POST')) {
+                $keyword = urlencode($request->request->get('keyword'));
+            }
+            else {
+                $page = urlencode($request->query->get('page'));
+                $keyword = urlencode($request->query->get('keyword'));
+            }
             $flickrPage = !$page ? "": $page;
             $method = 'flickr.photos.search';
 
@@ -37,7 +43,6 @@ class FlickrController extends Controller
 
     public function getPhotoAction(Request $request, $photo_id)
     {
-            $photo_id = $photo_id;
             $photo_secret = $request->query->get('photo_secret');
             $method = 'flickr.photos.getInfo';
             $option = ["photo_id" => $photo_id, "photo_secret" => $photo_secret];
@@ -47,12 +52,6 @@ class FlickrController extends Controller
             dump($result);
             
             return $this->render('@App/detail.html.twig', array('flickr' => $response['flickrResponse'], "keyword" => $keyword));
-
-    }
-
-    public function paginateAction(Request $request, $page)
-    {
-      // @TODO: Add the logic to paginate results when searching by Keyword
 
     }
 

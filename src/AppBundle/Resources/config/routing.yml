@@ -9,8 +9,8 @@ flickr_api_search:
     methods:    [POST]
 
 flickr_api_search_pagination:
-    path:       /flickr/search/{page}
-    defaults:   { _controller: AppBundle:Flickr:search, page:null }
+    path:       /flickr/search
+    defaults:   { _controller: AppBundle:Flickr:search }
     methods:    [GET, POST]
 
 flickr_api_get_photo:

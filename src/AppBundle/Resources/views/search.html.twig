@@ -3,6 +3,8 @@
 {% block body %}
     <div class="row">
         {% if flickr['photos'] is defined %}
+            {% set page = flickr['photos']['page'] %}
+            {% set page_end = flickr['photos']['pages'] %}
             <div>
                 Page: <span class="badge">{{flickr['photos']['page']}} out of <span class="badge">{{flickr['photos']['pages']}}</span>
             </div>
@@ -12,19 +14,41 @@
                     <div class="alert alert-info" role="alert"> Showing results for: <strong>{{ keyword }}</strong></div> 
                 {% endif %}
             </div>
+            <div class="clearfix" style="padding:2em;"></div>
             {% for photo in flickr['photos']['photo'] %}
                 <div class="col-md-4" style="padding: 1em;">
                     <a href="{{ path('flickr_api_get_photo', {'photo_id': photo["id"] }) }}?photo_secret={{ photo["secret"] }}">
-                        <img class="img-responsive img-center" src="http://farm{{ photo["farm"] }}.static.flickr.com/{{ photo["server"] }}/{{ photo["id"] }}_{{ photo["secret"]}}_m.jpg/sizes/m/" media="photo" alt="{{ photo['title']}}">
+                        <img class="img-thumbnail img-center" src="http://farm{{ photo["farm"] }}.static.flickr.com/{{ photo["server"] }}/{{ photo["id"] }}_{{ photo["secret"]}}_m.jpg/sizes/m/" media="photo" alt="{{ photo['title']}}">
                     </a>
                 </div>
             {% endfor %}
+            <div class="clearfix" style="padding:2em;"></div>
             <div class="row">
                 <div class="bs-example" data-example-id="simple-pager">
                     <nav aria-label="...">
-                        <ul class="pager"> <li>
-                            <a href="#">Previous</a></li>
-                            <li><a href="{{ path('flickr_api_search') }}">Next</a></li>
+                        <ul class="pager"> 
+                            {% if page == 1 %}
+                                <li>
+                                    <a class="btn disabled">Previous</a>
+                                </li>
+                                <li>
+                                    <a href="{{ path('flickr_api_search', {'page': page + 1}) }}&keyword={{keyword}}">Next</a>
+                                </li>
+                            {% elseif page == page_end %}
+                                <li>
+                                    <a href="{{ path('flickr_api_search', {'page': page - 1}) }}&keyword={{keyword}}">Previous</a>
+                                </li>
+                                <li>
+                                    <a class="btn disabled">Next</a>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <a href="{{ path('flickr_api_search', {'page': page - 1}) }}&keyword={{keyword}}">Previous</a>
+                                </li>
+                                <li>
+                                    <a href="{{ path('flickr_api_search', {'page': page + 1}) }}&keyword={{keyword}}">Next</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </nav>
                 </div>
