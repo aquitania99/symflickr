@@ -12,7 +12,7 @@ class FlickrController extends Controller
     private $apiKey;
     private $apiSecret;
     private $apiUrl;
-    protected $keyword;
+    protected $option;
     protected $method;
     protected $format;
 
@@ -28,11 +28,23 @@ class FlickrController extends Controller
             $keyword = urlencode($request->request->get('keyword'));
             $flickrPage = !$page ? "": $page;
             $method = 'flickr.photos.search';
-   
+
             $response = $this->flickrAction($method, $flickrPage, $keyword);
 
             return $this->render('@App/layout.html.twig', array('flickr' => $response['flickrResponse'], "keyword" => $keyword));
-  
+
+    }
+
+    public function getPhotoAction(Request $request, $photo_id)
+    {
+            $photo_id = $photo_id;
+            $photo_secret = $request->query->get('photo_secret');
+            $method = 'flickr.photos.getInfo';
+            $option = ["photo_id" => $photo_id, "photo_secret" => $photo_secret];
+            $response = $this->flickrAction($method, "", $option);
+
+            return $this->render('@App/layout.html.twig', array('flickr' => $response['flickrResponse'], "keyword" => $keyword));
+
     }
 
     protected function curlCall($url) {
@@ -54,26 +66,52 @@ class FlickrController extends Controller
             return null;
         }
     }
-    
-    protected function flickrAction($method, $page=null, $keyword=null)
-    {
+
+    protected function flickrAction($method, $page=null, $option=null) {
         $this->apiKey = $this->container->getParameter('flickr_key');
         $this->apiSecret = $this->container->getParameter('flickr_secret');
         $this->apiUrl = $this->container->getParameter('flickr_url');
         $extras = urlencode('tags, description');
         $resultsPerPage = 10;
-        $this->keyword = urlencode($keyword);
-        $this->method = $method;
-        
-        if ($method == 'flickr.photos.search'){
-            $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&text=".$this->keyword."&page=".$page."&extras=".$extras."&per_page=".$resultsPerPage."&format=json";
-            $response = $this->curlCall($url);
-            
-        } elseif ($method == 'flickr.photos.getRecent'){
-            $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&extras=".$extras."&page=".$page."&per_page=".$resultsPerPage."&format=json";
-            $response = $this->curlCall($url);
+        if ( !is_array($option) ) {
+          $this->option = urlencode($option);
         }
-        
+        else $this->option = $option;
+        dump($this->option);
+
+        $this->method = $method;
+
+        switch ($this->method) {
+          case 'flickr.photos.search':
+            $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&text=".$this->option."&page=".$page."&extras=".$extras."&per_page=".$resultsPerPage."&format=json";
+            $response = $this->curlCall($url);
+            break;
+
+            case 'flickr.photos.getRecent':
+              $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&extras=".$extras."&page=".$page."&per_page=".$resultsPerPage."&format=json";
+              $response = $this->curlCall($url);
+              break;
+
+            case 'flickr.photos.getPopular':
+              $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&extras=".$extras."&page=".$page."&per_page=".$resultsPerPage."&format=json";
+              $response = $this->curlCall($url);
+              break;
+
+            case 'flickr.photos.getInfo':
+              if ( is_array($this->option) ) {
+                $photo_id = $this->option['photo_id'];
+                $photo_secret = $option['photo_secret'];
+                $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&photo_id=".$photo_id."&secret=".$photo_secret."&format=json";
+                $response = $this->curlCall($url);
+              }
+              else $response = false;
+              break;
+
+          default:
+            # code...
+            break;
+        }
+
         return array("flickrResponse"=>$response);
     }
 }

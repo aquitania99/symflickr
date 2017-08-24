@@ -7,8 +7,15 @@ flickr_api_search:
     path:       /flickr/search
     defaults:   { _controller: AppBundle:Flickr:search }
     methods:    [POST]
-    
+
 flickr_api_search_pagination:
     path:       /flickr/search/{page}
     defaults:   { _controller: AppBundle:Flickr:search, page:null }
     methods:    [GET, POST]
+
+flickr_api_get_photo:
+    path:       /flickr/photo/{photo_id}
+    defaults:   { _controller: AppBundle:Flickr:getPhoto }
+    requirements:
+      photo_id: '\d+'
+    methods:    [GET]
