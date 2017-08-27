@@ -186,10 +186,10 @@ class FlickrController extends Controller
                         }
 
                       case "urls":
-                        // dump($value['urls']['url']);
                         if (is_array($value['urls']['url'])) {
                           $urls=array();
                           foreach ($value['urls']['url'] as $key => $value) {
+                            dump($key, $value);
                             $urls=[$value['_content']];
                           }
                           array_push($photo['info'], $urls);
