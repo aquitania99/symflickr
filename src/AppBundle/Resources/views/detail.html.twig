@@ -1,8 +1,20 @@
 {% extends '::base.html.twig' %}
 {% block title %}Flickr - Photo Info{% endblock %}
 {% block body %}
-    
+
     {% dump(flickr['photo'])%}
+    {% for k, item in flickr['photo'] %}
+      {% dump(k) %}
+       {% dump(item) %}
+      <div class="row">{{ k }} : {{item}}</div>
+      {% if item['owner'] is iterable %}
+      <div class="row">
+        <h3>Owner</h3>
+        <div class="label label-alert">{{ k }} : {{item}}</div>
+      </div>
+      {%endif%}
+    {% endfor %}
+    <img src="{{flickr['photo']['urls']['url'][0]['_content']}}" />
     <a href="{{flickr['photo']['urls']['url'][0]['_content']}}" target="_blank">
         Photo
     </a>

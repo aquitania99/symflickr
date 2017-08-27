@@ -50,7 +50,7 @@ class FlickrController extends Controller
             $keyword = $response['flickrResponse']['photo']['title']['_content'];
             $result = $this->getDetails($response);
             dump($result);
-            
+
             return $this->render('@App/detail.html.twig', array('flickr' => $response['flickrResponse'], "keyword" => $keyword));
 
     }
@@ -91,7 +91,9 @@ class FlickrController extends Controller
 
         switch ($this->method) {
           case 'flickr.photos.search':
-            $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&text=".$this->option."&page=".$page."&extras=".$extras."&per_page=".$resultsPerPage."&format=json";
+            $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method
+                  ."&text=".$this->option."&page=".$page."&extras=".$extras
+                  ."&content_type=1&safe_search=2&per_page=".$resultsPerPage."&format=json";
             $response = $this->curlCall($url);
             break;
 
@@ -111,6 +113,9 @@ class FlickrController extends Controller
                 $photo_secret = $option['photo_secret'];
                 $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&photo_id=".$photo_id."&secret=".$photo_secret."&format=json";
                 $response = $this->curlCall($url);
+                $imgData = $this->getDetails($response);
+                dump($imgData);
+                die('Stop!');
               }
               else $response = false;
               break;
@@ -119,19 +124,80 @@ class FlickrController extends Controller
             # code...
             break;
         }
-        
+
         return array("flickrResponse"=>$response);
     }
-    
+
     protected function getDetails($photo_data) {
+      dump($photo_data['photo']);
+      $photo['info'] = array();
+        array_push($photo['info'], $photo_data['photo']['id']);
+        array_push($photo['info'], $photo_data['photo']['secret']);
+        array_push($photo['info'], $photo_data['photo']['server']);
+        array_push($photo['info'], $photo_data['photo']['farm']);
+        array_push($photo['info'], $photo_data['photo']['originalformat']);
         foreach ($photo_data as $key => $value) {
-            echo "<span style='padding:1em;'>" . $key . "<span>";
             if(is_array($value)){
                 foreach ($value as $item => $val) {
-                    echo "<span style='padding:1em;'>" . $item . "<span>";
-                    echo "<span style='padding:1em;'>" . $item . "<span>";
+                    switch($item):
+                      case "owner":
+                        array_push($photo['info'], [$val['username'], $val['realname'], $val['location']]);
+                      case "title":
+                        if (!empty($val['_content'])){
+                          $title = $val['_content'];
+                          // dump("Title", $title);
+                        }
+                        else $title = "N/A";
+                        array_push($photo['info'], $title);
+                      case "description":
+                        if (!empty($val['_content'])){
+                          $description = $val['_content'];
+                          // dump("description", $description);
+                          array_push($photo['info'], $description);
+                        }
+                        else $description = "N/A";
+                      case "dates":
+                        if (!empty($val['taken'])){
+                          $dateTaken = $val['taken'];
+                          // dump("dateTaken", $dateTaken);
+                        }
+                        else $dateTaken = "N/A";
+                        array_push($photo['info'], $dateTaken);
+                      case "views":
+                        // dump($val);
+                        if (!empty($val['views'])){
+                          $views = $val['views'];
+                          // dump("Views", $views);
+                        }
+                        else $views = 0;
+                        array_push($photo['info'], $views);
+
+                      case "tags":
+                        if (is_array($value['tags']['tag'])){
+                          array_push($photo['info'], $value['tags']['tag']);
+                        }
+                        else {
+                          $tags = "N/A";
+                          array_push($photo['info'], $tags);
+                        }
+
+                      case "urls":
+                        // dump($value['urls']['url']);
+                        if (is_array($value['urls']['url'])) {
+                          array_push($photo['info'], $value['urls']['url']);
+                        }
+                        else {
+                          $urls = "N/A";
+                          array_push($photo['info'], $urls);
+                        }
+                        // dump("Result!?", $tag);
+                        return $photo['info'];
+                        break;
+                    endswitch;
                 }
+                // dump($key, $value);
             }
+            // else dump($key, $value);
         }
     }
 }
