@@ -85,7 +85,6 @@ class FlickrController extends Controller
           $this->option = urlencode($option);
         }
         else $this->option = $option;
-//        dump($this->option);
 
         $this->method = $method;
 
@@ -112,10 +111,10 @@ class FlickrController extends Controller
                 $photo_id = $this->option['photo_id'];
                 $photo_secret = $option['photo_secret'];
                 $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&photo_id=".$photo_id."&secret=".$photo_secret."&format=json";
-                $response = $this->curlCall($url);
-                $imgData = $this->getDetails($response);
-                dump($imgData);
-                die('Stop!');
+                $result = $this->curlCall($url);
+                $response = $this->getDetails($result);
+                dump($response);
+                return $response;
               }
               else $response = false;
               break;
@@ -145,29 +144,24 @@ class FlickrController extends Controller
                       case "title":
                         if (!empty($val['_content'])){
                           $title = $val['_content'];
-                          // dump("Title", $title);
                         }
                         else $title = "N/A";
                         array_push($photo['info'], $title);
                       case "description":
                         if (!empty($val['_content'])){
                           $description = $val['_content'];
-                          // dump("description", $description);
                           array_push($photo['info'], $description);
                         }
                         else $description = "N/A";
                       case "dates":
                         if (!empty($val['taken'])){
                           $dateTaken = $val['taken'];
-                          // dump("dateTaken", $dateTaken);
                         }
                         else $dateTaken = "N/A";
                         array_push($photo['info'], $dateTaken);
                       case "views":
-                        // dump($val);
                         if (!empty($val['views'])){
                           $views = $val['views'];
-                          // dump("Views", $views);
                         }
                         else $views = 0;
                         array_push($photo['info'], $views);
@@ -176,7 +170,7 @@ class FlickrController extends Controller
                         if (is_array($value['tags']['tag'])){
                           $tags=array();
                           foreach ($value['tags']['tag'] as $key => $value) {
-                            $tags=[$value['_content']];
+                            $tags[]=$value['_content'];
                           }
                           array_push($photo['info'], $tags);
                         }
@@ -189,8 +183,7 @@ class FlickrController extends Controller
                         if (is_array($value['urls']['url'])) {
                           $urls=array();
                           foreach ($value['urls']['url'] as $key => $value) {
-                            dump($key, $value);
-                            $urls=[$value['_content']];
+                            $urls[]=$value['_content'];
                           }
                           array_push($photo['info'], $urls);
                         }
@@ -198,14 +191,12 @@ class FlickrController extends Controller
                           $tags = "N/A";
                           array_push($photo['info'], $urls);
                         }
-                        // dump("Result!?", $tag);
+
                         return $photo['info'];
                         break;
                     endswitch;
                 }
-                // dump($key, $value);
             }
-            // else dump($key, $value);
         }
     }
 }
