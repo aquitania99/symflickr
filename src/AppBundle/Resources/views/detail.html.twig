@@ -2,42 +2,27 @@
 {% block title %}Flickr - Photo Info{% endblock %}
 {% block body %}
 
-    {% dump(flickr['photo'])%}
-    {% for k, item in flickr['photo'] %}
-      {% dump(k) %}
-       {% dump(item) %}
-      <div class="row">{{ k }} : {{item}}</div>
-      {% if item['owner'] is iterable %}
-      <div class="row">
-        <h3>Owner</h3>
-        <div class="label label-alert">{{ k }} : {{item}}</div>
-      </div>
-      {%endif%}
-    {% endfor %}
-    <img src="{{flickr['photo']['urls']['url'][0]['_content']}}" />
-    <a href="{{flickr['photo']['urls']['url'][0]['_content']}}" target="_blank">
+    {% dump(flickr)%}
+    <img src="{{flickr['urls']['url'][0]['_content']}}" />
+    <a href="{{flickr['urls']['url'][0]['_content']}}" target="_blank">
         Photo
     </a>
-    {#<div>
+    <div>
         <table>
-            {% for key, item in flickr['photo'] %}
+            {% for key, item in flickr %}
                 <tr style="padding: 1em;">
-                    <td>{{key}}</td>
-                    {% if item is iterable %}
-                        {% for value in item %}
-                            {% if value is iterable %}
-                                {% for part in value %}
-                                    **** // ****
-                                {% endfor %}
-                            {% else %}
-                                <td>{{value}}</td>
-                            {% endif %}
-                        {% endfor %}
-                    {% else %}
-                        <td>{{item}}</td>
+                    {% if key == 'tags' %}
+                      {% for tag in item['tag'] %}
+                        {%dump(tag['_content'])%}
+                      {% endfor %}
+                    {% elseif key == 'urls' %}
+                      {% for data in item['url'] %}
+                        {%dump(data['type'])%}
+                        {%dump(data['_content'])%}
+                      {% endfor %}
                     {% endif %}
                 </tr>
             {% endfor %}
         </table>
-    </div>#}
+    </div>
 {% endblock %}

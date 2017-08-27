@@ -47,11 +47,10 @@ class FlickrController extends Controller
             $method = 'flickr.photos.getInfo';
             $option = ["photo_id" => $photo_id, "photo_secret" => $photo_secret];
             $response = $this->flickrAction($method, "", $option);
-            $keyword = $response['flickrResponse']['photo']['title']['_content'];
-            $result = $this->getDetails($response);
-            dump($result);
+            $keyword = $response['photo']['title']['_content'];
+            // $result = $this->getDetails($response);
 
-            return $this->render('@App/detail.html.twig', array('flickr' => $response['flickrResponse'], "keyword" => $keyword));
+            return $this->render('@App/detail.html.twig', array('flickr' => $response['photo'], "keyword" => $keyword));
 
     }
 
@@ -111,9 +110,9 @@ class FlickrController extends Controller
                 $photo_id = $this->option['photo_id'];
                 $photo_secret = $option['photo_secret'];
                 $url = $this->apiUrl."api_key=".$this->apiKey."&method=".$this->method."&photo_id=".$photo_id."&secret=".$photo_secret."&format=json";
-                $result = $this->curlCall($url);
-                $response = $this->getDetails($result);
-                dump($response);
+                $response = $this->curlCall($url);
+                // $response = $this->getDetails($result);
+                // dump($response);
                 return $response;
               }
               else $response = false;
@@ -130,11 +129,7 @@ class FlickrController extends Controller
     protected function getDetails($photo_data) {
       dump($photo_data['photo']);
       $photo['info'] = array();
-        array_push($photo['info'], $photo_data['photo']['id']);
-        array_push($photo['info'], $photo_data['photo']['secret']);
-        array_push($photo['info'], $photo_data['photo']['server']);
-        array_push($photo['info'], $photo_data['photo']['farm']);
-        array_push($photo['info'], $photo_data['photo']['originalformat']);
+        array_push($photo['info'], $photo_data['photo']);
         foreach ($photo_data as $key => $value) {
             if(is_array($value)){
                 foreach ($value as $item => $val) {
@@ -179,18 +174,18 @@ class FlickrController extends Controller
                           array_push($photo['info'], $tags);
                         }
 
-                      case "urls":
-                        if (is_array($value['urls']['url'])) {
-                          $urls=array();
-                          foreach ($value['urls']['url'] as $key => $value) {
-                            $urls[]=$value['_content'];
-                          }
-                          array_push($photo['info'], $urls);
-                        }
-                        else {
-                          $tags = "N/A";
-                          array_push($photo['info'], $urls);
-                        }
+                      // case "urls":
+                        // if (is_array($value['urls']['url'])) {
+                        //   $urls=array();
+                        //   foreach ($value['urls']['url'] as $key => $value) {
+                        //     $urls[]=$value['_content'];
+                        //   }
+                        //   array_push($photo['info'], $urls);
+                        // }
+                        // else {
+                        //   $tags = "N/A";
+                        //   array_push($photo['info'], $urls);
+                        // }
 
                         return $photo['info'];
                         break;
