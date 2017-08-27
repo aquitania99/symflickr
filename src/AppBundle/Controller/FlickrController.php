@@ -174,7 +174,11 @@ class FlickrController extends Controller
 
                       case "tags":
                         if (is_array($value['tags']['tag'])){
-                          array_push($photo['info'], $value['tags']['tag']);
+                          $tags=array();
+                          foreach ($value['tags']['tag'] as $key => $value) {
+                            $tags=[$value['_content']];
+                          }
+                          array_push($photo['info'], $tags);
                         }
                         else {
                           $tags = "N/A";
@@ -184,10 +188,14 @@ class FlickrController extends Controller
                       case "urls":
                         // dump($value['urls']['url']);
                         if (is_array($value['urls']['url'])) {
-                          array_push($photo['info'], $value['urls']['url']);
+                          $urls=array();
+                          foreach ($value['urls']['url'] as $key => $value) {
+                            $urls=[$value['_content']];
+                          }
+                          array_push($photo['info'], $urls);
                         }
                         else {
-                          $urls = "N/A";
+                          $tags = "N/A";
                           array_push($photo['info'], $urls);
                         }
                         // dump("Result!?", $tag);
