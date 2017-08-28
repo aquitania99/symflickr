@@ -1,28 +1,81 @@
 {% extends '::base.html.twig' %}
 {% block title %}Flickr - Photo Info{% endblock %}
 {% block body %}
-
-    {% dump(flickr)%}
-    <img src="{{flickr['urls']['url'][0]['_content']}}" />
-    <a href="{{flickr['urls']['url'][0]['_content']}}" target="_blank">
-        Photo
-    </a>
-    <div>
-        <table>
-            {% for key, item in flickr %}
-                <tr style="padding: 1em;">
-                    {% if key == 'tags' %}
-                      {% for tag in item['tag'] %}
-                        {%dump(tag['_content'])%}
-                      {% endfor %}
-                    {% elseif key == 'urls' %}
-                      {% for data in item['url'] %}
-                        {%dump(data['type'])%}
-                        {%dump(data['_content'])%}
-                      {% endfor %}
-                    {% endif %}
-                </tr>
-            {% endfor %}
-        </table>
+    <div class="center-block">
+      <img class="img-thumbnail img-center" src="http://farm{{ flickr["farm"] }}.static.flickr.com/{{ flickr["server"] }}/{{ flickr["id"] }}_{{ flickr["secret"]}}_c.jpg" media="photo" alt="{{ flickr['title']['_content']}}">
+      <div class="pull-left" style="padding-top:1em; padding-bottom:1em;">
+        <a href="#" onclick="goBack()" class="btn btn-default" role="button"> << Back</a>
+      </div>
     </div>
+    <div class="clearfix"></div>
+    <div>
+
+      <div class="panel panel-info">
+        <div class="panel-heading"></div>
+        <div class="panel-body">
+          <div>
+              <h5>From Flickr</h5>
+              <ul>
+                <li>Image Id : {{ flickr["id"] }}</li>
+                <li>Original format : {% if flickr["originalformat"] is defined %}
+                    {{ flickr["originalformat"] }}
+                    {% else %} Original format: N/A {% endif %}
+                </li>
+                <li>{% if flickr["license"] == 0 %}License : N/A
+                    {% else %}License: {{ flickr["id"] }}
+                    {% endif %}
+                </li>
+                <li>
+                  {% if flickr["dates"] and flickr["dates"]['taken'] is defined  %}
+                    Date taken: {{ flickr["dates"]['taken'] }}
+                  {% else %} Date taken: Not Defined
+                  {% endif %}
+                </li>
+                <li>
+                  {% if flickr['comments']['_content'] is defined and flickr['comments']['_content'] != 0 %}
+                    <p class="bg-warning">Comments: {{flickr['comments']['_content']}}</p>
+                  {% else %}
+                    <p class="bg-warning">No comments</p>
+                  {% endif %}
+                </li>
+
+              </ul>
+              {% if flickr["owner"] is defined %}
+                  <div>
+                      <h5>Owner</h5>
+                      <ul>
+                        <li>username : {{ flickr["owner"]["username"] }}</li>
+                        <li>real name : {{ flickr["owner"]["realname"] }}</li>
+                        <li>Location : {{ flickr["owner"]["location"] }}</li>
+                      </ul>
+                  </div>
+              {% endif %}
+
+              {% if flickr["urls"] and flickr["urls"]['url'] is defined %}
+                {% for data in flickr["urls"]['url'] %}
+                  <span class=""> Type: {{ data['type'] }}</span>
+                  <span>
+                    <a href="{{ data['_content'] }}" class="alert-link">{{ data['_content'] }}</a>
+                  </span>
+                {% endfor %}
+              {% endif %}
+          </div>
+        </div>
+      </div>
+
+      {% if flickr["tags"]['tag'] is defined and flickr["tags"]['tag'] != ""  %}
+        <div class="panel panel-primary">
+          <div class="panel-heading">Tags</div>
+          <div class="panel-body">
+            {% for tag in flickr["tags"]['tag'] %}
+              <span class="badge"> {{ tag['_content'] }}</span>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+      <script>
+        function goBack() {
+            window.history.back();
+        }
+      </script>
 {% endblock %}

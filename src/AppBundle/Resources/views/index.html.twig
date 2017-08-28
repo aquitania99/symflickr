@@ -8,8 +8,8 @@
              <div><strong>Total Photos returned:</strong> <span class="badge">{{flickr['photos']['total']}}</span></div>
             <div>
                 {% for photo in flickr['photos']['photo'] %}
-                    <div class="col-md-4" style="padding: 1em;">
-                        <a href="https://www.flickr.com/photos/{{photo["owner"]}}/{{photo["id"]}}" target="_blank">
+                    <div class="col-xs-6 col-md-3" style="padding: 1em;">
+                        <a href="https://www.flickr.com/photos/{{photo["owner"]}}/{{photo["id"]}}" class="thumbnail" target="_blank">
                             <img class="img-thumbnail img-center" src="http://farm{{ photo["farm"] }}.static.flickr.com/{{ photo["server"] }}/{{ photo["id"] }}_{{ photo["secret"]}}_m.jpg/sizes/m/" media="photo" alt="{{ photo['title']}}">
                         </a>
                     </div>
